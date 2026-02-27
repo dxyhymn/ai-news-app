@@ -5,7 +5,7 @@ import '../models/news_article.dart';
 class NewsService {
   // GNews API (免费套餐: 100 次/天)
   // 注册获取 key: https://gnews.io/
-  static const String _apiKey = 'YOUR_GNEWS_API_KEY';
+  static const String _apiKey = 'cea580e1dc3de091ea3f4f263e2573bb';
   static const String _baseUrl = 'https://gnews.io/api/v4';
 
   bool get _hasApiKey => _apiKey != 'YOUR_GNEWS_API_KEY' && _apiKey.isNotEmpty;
@@ -34,9 +34,10 @@ class NewsService {
 
     try {
       final query = _categoryQueries[category] ?? _categoryQueries['all']!;
+      final maxResults = pageSize > 10 ? 10 : pageSize;
       final url = Uri.parse(
         '$_baseUrl/search?q=${Uri.encodeComponent(query)}'
-        '&lang=zh&country=cn&max=$pageSize&page=$page'
+        '&lang=en&max=$maxResults&page=$page'
         '&apikey=$_apiKey',
       );
 
@@ -46,12 +47,14 @@ class NewsService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final articles = (data['articles'] as List?)
-            ?.asMap()
-            .entries
-            .map((entry) => _fromGNewsJson(entry.value, entry.key, category))
-            .toList();
-        return articles ?? [];
+        final articlesList = data['articles'] as List?;
+        if (articlesList != null && articlesList.isNotEmpty) {
+          return articlesList
+              .asMap()
+              .entries
+              .map((entry) => _fromGNewsJson(entry.value, entry.key, category))
+              .toList();
+        }
       }
 
       return _getMockNews(category, page, pageSize);
@@ -69,7 +72,7 @@ class NewsService {
     try {
       final url = Uri.parse(
         '$_baseUrl/search?q=${Uri.encodeComponent('$query AI')}'
-        '&lang=zh&max=20&apikey=$_apiKey',
+        '&lang=en&max=10&apikey=$_apiKey',
       );
 
       final response = await http.get(url).timeout(
@@ -78,12 +81,14 @@ class NewsService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final articles = (data['articles'] as List?)
-            ?.asMap()
-            .entries
-            .map((entry) => _fromGNewsJson(entry.value, entry.key, 'all'))
-            .toList();
-        return articles ?? [];
+        final articlesList = data['articles'] as List?;
+        if (articlesList != null && articlesList.isNotEmpty) {
+          return articlesList
+              .asMap()
+              .entries
+              .map((entry) => _fromGNewsJson(entry.value, entry.key, 'all'))
+              .toList();
+        }
       }
 
       return _searchMockNews(query);
