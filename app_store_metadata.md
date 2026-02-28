@@ -4,7 +4,7 @@
 
 - **应用名称**: AI 新闻
 - **副标题**: 追踪人工智能最新动态
-- **Bundle ID**: com.ainews.aiNewsApp
+- **Bundle ID**: com.daixiaoyong.ainews
 - **SKU**: ai-news-app-001
 - **主要语言**: 简体中文
 - **App 分类**: 新闻（主分类）
